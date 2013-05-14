@@ -82,7 +82,7 @@ var Overview = function() {
     var allTasksCount = 0;
     var flaggedTasksCount = 0;
 
-    chrome.storage.local.get(null, _.bind(function(items) {
+    chrome.storage.sync.get(null, _.bind(function(items) {
       var projects = items["projects"];
       var active = items["active"];
       var index = 0;

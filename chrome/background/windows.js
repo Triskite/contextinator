@@ -14,7 +14,7 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
   BrowserActionIcon.disable();
   updateContextMenu();
 
-  chrome.storage.local.get(null, function(items) {
+  chrome.storage.sync.get(null, function(items) {
     var active = items["active"];
     var projects = items["projects"];
     var temporaryWindows = items["temporaryWindows"];
@@ -30,14 +30,14 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
       BrowserActionIcon.set(null);
       BrowserActionIcon.enable();
 
-      chrome.storage.local.set({
+      chrome.storage.sync.set({
         "overviewWindowId": windowId,
         "openingWindowType": 0
       });
 
-      chrome.storage.local.remove("active");
+      chrome.storage.sync.remove("active");
       reloadJumperForWindow(windowId);
-      chrome.storage.local.set({"lastFocusedWindowId": windowId});
+      chrome.storage.sync.set({"lastFocusedWindowId": windowId});
       return;
     }
 
@@ -46,18 +46,18 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
     else if (openingWindowType == 3) {
       projects[active].windowId = windowId;
 
-      chrome.storage.local.set({
+      chrome.storage.sync.set({
         "projects": projects,
         "openingWindowType": 0
       });
 
       BrowserActionIcon.enable();
-      chrome.storage.local.set({"lastFocusedWindowId": windowId});
+      chrome.storage.sync.set({"lastFocusedWindowId": windowId});
       return;
     }
 
     // else, check if user switched to an already open project window
-    chrome.storage.local.set({"openingWindowType": 0});
+    chrome.storage.sync.set({"openingWindowType": 0});
 
     for (var i = 0; i < len; i ++) {
       if (projects[i].windowId == windowId) {
@@ -66,12 +66,12 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
         BrowserActionIcon.set(projects[i]);
         BrowserActionIcon.enable();
         console.log("Setting project as active: " + projects[i].name);
-        chrome.storage.local.set({"active": i, projects: projects}, function() {
+        chrome.storage.sync.set({"active": i, projects: projects}, function() {
           reloadJumperForWindow(windowId);
         });
 
         if (lastFocusedWindowId != windowId) {
-          chrome.storage.local.set({"lastFocusedWindowId": windowId});
+          chrome.storage.sync.set({"lastFocusedWindowId": windowId});
         }
 
         return;
@@ -79,7 +79,7 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
     }
 
     // else, user switched or opened a new non-project window
-    chrome.storage.local.remove("active");
+    chrome.storage.sync.remove("active");
 
     chrome.windows.get(windowId, {populate: true}, function(aWindow) {
       if (windowTypeBlacklist.indexOf(aWindow.type) == -1) {
@@ -107,12 +107,12 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
           temporaryWindows = [aWindow];
         }
 
-        chrome.storage.local.set({"temporaryWindows": temporaryWindows}, function() {
+        chrome.storage.sync.set({"temporaryWindows": temporaryWindows}, function() {
           reloadJumperForWindow(windowId);
         });
 
         if (lastFocusedWindowId != windowId) {
-          chrome.storage.local.set({"lastFocusedWindowId": windowId});
+          chrome.storage.sync.set({"lastFocusedWindowId": windowId});
         }
       }
 
@@ -224,7 +224,7 @@ function refreshTemporaryWindows(callback) {
       return aWindow;
     });
 
-    chrome.storage.local.set({"temporaryWindows": windows}, callback);
+    chrome.storage.sync.set({"temporaryWindows": windows}, callback);
   });
 }
 
@@ -234,7 +234,7 @@ function saveTabs(windowId, tab, callback) {
     callback = function(){};
   }
 
-  chrome.storage.local.get(null, function(items) {
+  chrome.storage.sync.get(null, function(items) {
     var projects = items["projects"];
     var active = projects[items["active"]];
     var overviewWindowId = items["overviewWindowId"];
@@ -285,7 +285,7 @@ function saveTabs(windowId, tab, callback) {
           chrome.tabs.captureVisibleTab(windowId, {format: "jpeg", quality: 1}, function(data) {
             if (projectIndex != -1) {
               projects[projectIndex].thumbnail = data;
-              chrome.storage.local.set({
+              chrome.storage.sync.set({
                 "projects": projects,
                 "active": projectIndex
               }, function() {
@@ -293,7 +293,7 @@ function saveTabs(windowId, tab, callback) {
               });
             } else {
               temporaryWindows[windowIndex].thumbnail = data;
-              chrome.storage.local.set({"temporaryWindows": temporaryWindows}, function() {
+              chrome.storage.sync.set({"temporaryWindows": temporaryWindows}, function() {
                 callback();
               });
             }
@@ -306,14 +306,14 @@ function saveTabs(windowId, tab, callback) {
 
 // Closes a project or non-project window and update the local store
 function closeProjectWindow(windowId) {
-  chrome.storage.local.get(null, function(items) {
+  chrome.storage.sync.get(null, function(items) {
     var updatedProject = false;
     var projects = items["projects"];
     var len = projects.length;
     var overviewWindowId = items["overviewWindowId"];
 
     if (overviewWindowId && overviewWindowId == windowId) {
-      chrome.storage.local.remove("overviewWindowId");
+      chrome.storage.sync.remove("overviewWindowId");
       return true;
     }
 
@@ -326,7 +326,7 @@ function closeProjectWindow(windowId) {
     if (i < len) {
       projects[i].windowId = null;
       console.log("Removed window for project: " + projects[i].name);
-      chrome.storage.local.set({"projects": projects});
+      chrome.storage.sync.set({"projects": projects});
     } else {
       var temporaryWindows = items["temporaryWindows"];
       console.log("Removed non-project window");
@@ -334,7 +334,7 @@ function closeProjectWindow(windowId) {
         return aWindow.id !== windowId;
       });
 
-      chrome.storage.local.set({"temporaryWindows": temporaryWindows});
+      chrome.storage.sync.set({"temporaryWindows": temporaryWindows});
     }
   });
 }

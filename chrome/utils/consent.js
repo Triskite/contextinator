@@ -2,7 +2,7 @@ var Consent = {
   URL: "",
 
   getStatus: function(callback) {
-    chrome.storage.local.get("consent", function(items) {
+    chrome.storage.sync.get("consent", function(items) {
       callback(items["consent"]);
     });
   },
@@ -13,7 +13,7 @@ var Consent = {
       email: email
     }, function() {});
 
-    chrome.storage.local.set({"consent": true});
+    chrome.storage.sync.set({"consent": true});
     Logging.track(Logging.actions.consentSubmitted);
   },
 

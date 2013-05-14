@@ -26,7 +26,7 @@ var BrowserAction = function() {
 
     Handlebars.registerPartial('task', Handlebars.templates.task);
 
-    chrome.storage.local.get(null, _.bind(function(items) {
+    chrome.storage.sync.get(null, _.bind(function(items) {
       var projects = items["projects"];
       var active = items["active"];
       var project = projects[active];

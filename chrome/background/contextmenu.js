@@ -2,7 +2,7 @@
 function updateContextMenu() {
   chrome.contextMenus.removeAll();
 
-  chrome.storage.local.get(["projects", "active"], function(items) {
+  chrome.storage.sync.get(["projects", "active"], function(items) {
     var active = items["projects"][items["active"]];
 
     if (active) {

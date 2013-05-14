@@ -21,8 +21,8 @@ var APPS = {
     search_uri: "https://trello.com"
   },
 
-  evernote: {
-    name: "Evernote",
-    search_uri: "https://www.evernote.com/Home.action"
+  workflowy: {
+    name: "Workflowy",
+    search_uri: "https://www.workflowy.com/#"
   }
 };

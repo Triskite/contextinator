@@ -67,7 +67,7 @@ var Logging = {
       callback = function(){};
     }
 
-    chrome.storage.local.get("userId", function(items) {
+    chrome.storage.sync.get("userId", function(items) {
       if (!items["userId"]) {
         Logging.initUserId();
       } else {
@@ -80,7 +80,7 @@ var Logging = {
 
   track: function(action, data) {
     var unixTimestamp = parseInt(new Date().getTime() / 1000);
-    chrome.storage.local.get("log", function(items) {
+    chrome.storage.sync.get("log", function(items) {
       var log;
       if (!items["log"]) {
         log = [];
@@ -97,7 +97,7 @@ var Logging = {
 
       log.push(entry);
       console.log(entry);
-      chrome.storage.local.set({"log": log});
+      chrome.storage.sync.set({"log": log});
 
       $.post(Logging.logURL, {
         timestamp: entry.timestamp,
@@ -112,6 +112,6 @@ var Logging = {
   // Uses the current unix timestamp for the ID
   initUserId: function() {
     Logging.userId = parseInt(new Date().getTime() / 1000);
-    chrome.storage.local.set({"userId": Logging.userId});
+    chrome.storage.sync.set({"userId": Logging.userId});
   }
 }

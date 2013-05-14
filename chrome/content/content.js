@@ -6,7 +6,7 @@ var projects, active, apps, appId;
 init();
 
 function init() {
-  chrome.storage.local.get(null, function(items) {
+  chrome.storage.sync.get(null, function(items) {
     projects = items["projects"],
     active = projects[items["active"]],
     apps = items["apps"];

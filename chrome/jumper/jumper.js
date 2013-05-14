@@ -139,7 +139,7 @@ var Jumper = function() {
       "class": this.classes.projects
     }).appendTo(this.$container);
 
-    chrome.storage.local.get(null, _.bind(function(items) {
+    chrome.storage.sync.get(null, _.bind(function(items) {
       var temporaryWindows = items['temporaryWindows'];
       var projects = items['projects'];
       var project = projects[items['active']];
@@ -168,7 +168,7 @@ var Jumper = function() {
     }
 
     this.loading = true;
-    chrome.storage.local.get(null, _.bind(function(items) {
+    chrome.storage.sync.get(null, _.bind(function(items) {
       var temporaryWindows = items['temporaryWindows'];
       var projects = items['projects'];
       var project = projects[items['active']];

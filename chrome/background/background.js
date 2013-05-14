@@ -7,9 +7,9 @@ function init() {
   // 1 -> Project Window
   // 2 -> Overview Window
   // 3 -> New Project Window
-  chrome.storage.local.set({"openingWindowType": 0});
+  chrome.storage.sync.set({"openingWindowType": 0});
 
-  chrome.storage.local.get(["projects", "apps"], function(items) {
+  chrome.storage.sync.get(["projects", "apps"], function(items) {
     var projects = items["projects"];
 
     if (!projects) {
@@ -22,10 +22,10 @@ function init() {
       }
     }
 
-    chrome.storage.local.set({"apps": APPS});
+    chrome.storage.sync.set({"apps": APPS});
 
-    chrome.storage.local.set({"projects": projects}, function() {
-      chrome.storage.local.remove([
+    chrome.storage.sync.set({"projects": projects}, function() {
+      chrome.storage.sync.remove([
         "active",
         "overviewWindowId"
       ], function() {

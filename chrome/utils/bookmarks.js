@@ -2,10 +2,10 @@
 var Bookmarks = {
   // Create a parent bookmark folder, if it does not exist
   init: function(callback) {
-    chrome.storage.local.get("bookmarkFolderId", function(items) {
+    chrome.storage.sync.get("bookmarkFolderId", function(items) {
       if (!items["bookmarkFolderId"]) {
         chrome.bookmarks.create({title: "Contextinator"}, function(result) {
-          chrome.storage.local.set({"bookmarkFolderId": result.id}, function() {
+          chrome.storage.sync.set({"bookmarkFolderId": result.id}, function() {
             callback();
           });
         });
@@ -17,7 +17,7 @@ var Bookmarks = {
 
   // Handle new bookmark request from context menu
   newFromContextMenu: function(info, tab) {
-    chrome.storage.local.get(["projects", "active"], function(items) {
+    chrome.storage.sync.get(["projects", "active"], function(items) {
       var projects = items["projects"];
       var active = items["active"];
       var activeProject = projects[active];
@@ -50,7 +50,7 @@ var Bookmarks = {
 
   // Bookmark the specified tab in the specified project
   new: function(tab, project) {
-    chrome.storage.local.get(null, function(items) {
+    chrome.storage.sync.get(null, function(items) {
       var projects = items["projects"];
       var bookmarkFolderId = items["bookmarkFolderId"];
 
@@ -68,7 +68,7 @@ var Bookmarks = {
               }
             }
 
-            chrome.storage.local.set({"projects": projects}, function() {
+            chrome.storage.sync.set({"projects": projects}, function() {
               Bookmarks.create(tab, project.bookmarkFolderId);
             });
           });
@@ -86,7 +86,7 @@ var Bookmarks = {
       url: tab.url,
       parentId: parentId
     }, function(result) {
-      chrome.storage.local.get('bookmarkScreenshots', function(items) {
+      chrome.storage.sync.get('bookmarkScreenshots', function(items) {
         var bookmarkScreenshots = items['bookmarkScreenshots'];
         if (!bookmarkScreenshots) {
           bookmarkScreenshots = {};
@@ -94,7 +94,7 @@ var Bookmarks = {
 
         chrome.tabs.captureVisibleTab(tab.windowId, {}, function(data) {
           bookmarkScreenshots[result.id] = data;
-          chrome.storage.local.set({'bookmarkScreenshots': bookmarkScreenshots});
+          chrome.storage.sync.set({'bookmarkScreenshots': bookmarkScreenshots});
         });
       });
     });
@@ -105,7 +105,7 @@ var Bookmarks = {
     var id = project.bookmarkFolderId;
 
     if (id) {
-      chrome.storage.local.get('bookmarkScreenshots', function(items) {
+      chrome.storage.sync.get('bookmarkScreenshots', function(items) {
         var bookmarkScreenshots = items['bookmarkScreenshots'];
         chrome.bookmarks.getChildren(id, function(bookmarks) {
           if (bookmarkScreenshots) {
@@ -135,10 +135,10 @@ var Bookmarks = {
   // Remove a bookmark
   remove: function(id) {
     chrome.bookmarks.remove(id + "", function(){});
-    chrome.storage.local.get('bookmarkScreenshots', function(items) {
+    chrome.storage.sync.get('bookmarkScreenshots', function(items) {
       var bookmarkScreenshots = items['bookmarkScreenshots'];
       delete bookmarkScreenshots[id];
-      chrome.storage.local.set({'bookmarkScreenshots': bookmarkScreenshots});
+      chrome.storage.sync.set({'bookmarkScreenshots': bookmarkScreenshots});
     });
   },
 

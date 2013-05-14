@@ -210,8 +210,8 @@ var NewTab = function() {
 
   // Load the page content for the first time
   this.load = function(callback) {
-    chrome.storage.local.get(null, _.bind(function(items) {
-      var projects = items["projects"];
+    chrome.storage.sync.get(null, _.bind(function(items) {
+      var projects = sync["projects"];
       var project = projects[items["active"]];
       this.projectName = project.name;
       this.$container = $(".content");
@@ -234,7 +234,7 @@ var NewTab = function() {
     if (this.refreshing) {return false;}
     this.refreshing = true;
 
-    chrome.storage.local.get(null, _.bind(function(items) {
+    chrome.storage.sync.get(null, _.bind(function(items) {
       var projects = items["projects"];
       var project = projects[items["active"]];
 
@@ -296,7 +296,7 @@ var NewTab = function() {
 
   // Send request to close a project
   this.close = function(e) {
-    chrome.storage.local.get(["projects", "active"], function(items) {
+    chrome.storage.sync.get(["projects", "active"], function(items) {
       var projects = items["projects"];
       var project = projects[items["active"]];
       if (project) {
@@ -307,7 +307,7 @@ var NewTab = function() {
 
   // Send request to delete a project
   this.destroy = function(e) {
-    chrome.storage.local.get(["projects", "active"], function(items) {
+    chrome.storage.sync.get(["projects", "active"], function(items) {
       var projects = items["projects"];
       var project = projects[items["active"]];
 
@@ -370,7 +370,7 @@ var NewTab = function() {
         return;
       }
 
-      chrome.storage.local.get(["projects", "active"], _.bind(function(items) {
+      chrome.storage.sync.get(["projects", "active"], _.bind(function(items) {
         var projects = items["projects"];
         var project = projects[items["active"]];
 
@@ -390,7 +390,7 @@ var NewTab = function() {
 
     var id = $(e.target).data('id');
 
-    chrome.storage.local.get(["projects", "active"], function(items) {
+    chrome.storage.sync.get(["projects", "active"], function(items) {
       var projects = items["projects"];
       var project = projects[items["active"]];
 
@@ -405,7 +405,7 @@ var NewTab = function() {
   this.saveApps = function(e) {
     var $els = $('.app-url');
 
-    chrome.storage.local.get(["projects", "active"], _.bind(function(items) {
+    chrome.storage.sync.get(["projects", "active"], _.bind(function(items) {
       var projects = items["projects"];
       var project = projects[items["active"]];
       var apps = {};

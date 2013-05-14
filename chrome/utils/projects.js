@@ -5,7 +5,7 @@
 var Projects = {
   // Adds a new project and makes it the current project
   add: function(name, callback) {
-    chrome.storage.local.get(null, function(items) {
+    chrome.storage.sync.get(null, function(items) {
       var projects = items["projects"];
       var project = {
         name: name,
@@ -28,7 +28,7 @@ var Projects = {
           }
         }
 
-        chrome.storage.local.set({projects: projects,
+        chrome.storage.sync.set({projects: projects,
           active: active,
           temporaryWindows: newSet}, callback);
 
@@ -40,7 +40,7 @@ var Projects = {
 
   // Removes a project and closes the project window (if it is open)
   remove: function(project, callback) {
-    chrome.storage.local.get(null, function(items) {
+    chrome.storage.sync.get(null, function(items) {
       var projects = items["projects"];
       var len = projects.length;
       var active = items["active"];
@@ -54,9 +54,9 @@ var Projects = {
       }
 
       projects.splice(i, 1);
-      chrome.storage.local.set({projects: projects});
+      chrome.storage.sync.set({projects: projects});
       if (active == i) {
-        chrome.storage.local.remove("active");
+        chrome.storage.sync.remove("active");
       }
 
       // close the window for this project.
@@ -70,14 +70,14 @@ var Projects = {
 
   // Returns all the existing projects
   getAll: function(callback) {
-    chrome.storage.local.get("projects", function(items) {
+    chrome.storage.sync.get("projects", function(items) {
       callback(items["projects"]);
     });
   },
 
   // Returns the project by its name. If not found, returns null.
   getByName: function(name, callback) {
-    chrome.storage.local.get("projects", function(items) {
+    chrome.storage.sync.get("projects", function(items) {
       var projects = items["projects"];
       var len = projects.length;
 
@@ -94,7 +94,7 @@ var Projects = {
 
   // gets the temporary window by its id
   getTemporaryWindow: function(id, callback) {
-    chrome.storage.local.get("temporaryWindows", function(items) {
+    chrome.storage.sync.get("temporaryWindows", function(items) {
       var temporaryWindows = items["temporaryWindows"];
       var len = temporaryWindows.length;
 
@@ -111,14 +111,14 @@ var Projects = {
 
   // Saves a project.
   save: function(project, callback) {
-    chrome.storage.local.get("projects", function(items) {
+    chrome.storage.sync.get("projects", function(items) {
       var projects = items["projects"];
       var len = projects.length;
 
       for (var i = 0; i < len; i++) {
         if (projects[i].name == project.name) {
           projects[i] = project;
-          chrome.storage.local.set({"projects": projects}, callback);
+          chrome.storage.sync.set({"projects": projects}, callback);
           break;
         }
       }
@@ -127,7 +127,7 @@ var Projects = {
 
   // Saves an app for a project
   saveApp: function(projectName, appKey, appUrl, callback) {
-    chrome.storage.local.get("projects", function(items) {
+    chrome.storage.sync.get("projects", function(items) {
       var projects = items["projects"];
       var length = projects.length;
 
@@ -138,7 +138,7 @@ var Projects = {
           }
 
           projects[i].apps[appKey] = appUrl;
-          chrome.storage.local.set({"projects": projects}, callback);
+          chrome.storage.sync.set({"projects": projects}, callback);
           break;
         }
       }
@@ -148,13 +148,13 @@ var Projects = {
   // Makes the specified object as currently active
   setActive: function(project, windowId, callback) {
     if (project == null) {
-      chrome.storage.local.remove("active");
+      chrome.storage.sync.remove("active");
       BrowserActionIcon.set(null);
       callback();
       return true;
     }
 
-    chrome.storage.local.get("projects", function(items) {
+    chrome.storage.sync.get("projects", function(items) {
       var projects = items["projects"];
       var len = projects.length;
 
@@ -167,8 +167,8 @@ var Projects = {
             projects[i].windowId = windowId;
           }
 
-          chrome.storage.local.set({'active': i}, function() {
-            chrome.storage.local.set({'projects': projects}, function() {
+          chrome.storage.sync.set({'active': i}, function() {
+            chrome.storage.sync.set({'projects': projects}, function() {
               callback();
             });
           });
@@ -194,7 +194,7 @@ var Projects = {
 
     if (project.windowId) {
       console.log("Switched to project: " + project.name);
-      chrome.storage.local.set({"openingWindowType": 1});
+      chrome.storage.sync.set({"openingWindowType": 1});
 
       if (showHomepage) {
         Projects.openHomepage(project, function() {
@@ -219,7 +219,7 @@ var Projects = {
 
     else {
       console.log("Creating new window for project: " + project.name);
-      chrome.storage.local.set({"openingWindowType": 3});
+      chrome.storage.sync.set({"openingWindowType": 3});
 
       var urls = [];
       var foundHomepage = false;
@@ -317,11 +317,11 @@ var Projects = {
       callback = function(){};
     }
 
-    chrome.storage.local.get("overviewWindowId", function(items) {
+    chrome.storage.sync.get("overviewWindowId", function(items) {
       var windowId = items["overviewWindowId"];
 
       // see background.js
-      chrome.storage.local.set({"openingWindowType": 2}, function() {
+      chrome.storage.sync.set({"openingWindowType": 2}, function() {
         if (windowId) {
           focusWindow(windowId, callback);
         } else {
@@ -333,7 +333,7 @@ var Projects = {
 
   // Closes the overview window, if it exists
   closeOverview: function() {
-    chrome.storage.local.get("overviewWindowId", function(items) {
+    chrome.storage.sync.get("overviewWindowId", function(items) {
       if (items['overviewWindowId']) {
         if (chrome.windows) {
           chrome.windows.remove(items['overviewWindowId']);
